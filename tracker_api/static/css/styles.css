@@ -1,0 +1,179 @@
+/* BOLTSHIFT OFFICIAL UI THEME */
+:root {
+    --bolt-primary: #7c4dff;
+    --bolt-primary-dark: #651fff;
+    --bolt-bg: #f5f6f7;
+    --bolt-card-bg: #ffffff;
+    --bolt-text: #1a1c1e;
+    --bolt-text-muted: #6c757d;
+    --bolt-border: #e9ecef;
+    --bolt-radius: 20px;
+    --bolt-radius-pill: 50px;
+}
+
+body.bolt-bg {
+    background-color: var(--bolt-bg);
+    color: var(--bolt-text);
+    font-family: 'Outfit', sans-serif;
+    letter-spacing: -0.01em;
+}
+
+/* Header & Navigation */
+.bolt-header {
+    background: transparent;
+}
+
+.bolt-logo-circle {
+    background: var(--bolt-primary);
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+}
+
+.bolt-brand-text {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--bolt-text);
+    margin-left: 10px;
+}
+
+.bolt-nav-center {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(10px);
+    padding: 6px;
+    border-radius: var(--bolt-radius-pill);
+    border: 1px solid var(--bolt-border);
+}
+
+.bolt-nav-item {
+    padding: 8px 20px;
+    border-radius: var(--bolt-radius-pill);
+    text-decoration: none;
+    color: var(--bolt-text-muted);
+    font-weight: 500;
+    font-size: 0.95rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.bolt-nav-item:hover {
+    color: var(--bolt-text);
+    background: rgba(0,0,0,0.03);
+}
+
+.bolt-nav-item.active {
+    background: #1a1c1e;
+    color: #ffffff !important;
+}
+
+.bolt-icon-btn {
+    background: #ffffff;
+    border: 1px solid var(--bolt-border);
+    border-radius: 12px;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--bolt-text-muted);
+    transition: all 0.2s;
+}
+
+.bolt-icon-btn:hover {
+    background: #f8f9fa;
+    color: var(--bolt-primary);
+    border-color: var(--bolt-primary);
+}
+
+.bolt-user-name {
+    font-weight: 600;
+    font-size: 0.9rem;
+    line-height: 1.2;
+}
+
+.bolt-user-email {
+    font-size: 0.75rem;
+    color: var(--bolt-text-muted);
+}
+
+/* Cards & Content */
+.glass-card {
+    background: var(--bolt-card-bg);
+    border-radius: var(--bolt-radius);
+    border: 1px solid var(--bolt-border);
+    padding: 24px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.glass-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+}
+
+/* Typography Overrides */
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 700;
+}
+
+/* Badges & Pills */
+.badge-glass {
+    border-radius: 8px;
+    padding: 6px 12px;
+    font-weight: 600;
+    font-size: 0.75rem;
+    letter-spacing: 0.02em;
+}
+
+/* Tables Bolt Style */
+.table-responsive {
+    border-radius: 16px;
+}
+
+.table thead th {
+    background: #f8f9fa;
+    border-bottom: 1px solid var(--bolt-border);
+    color: var(--bolt-text-muted);
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: none;
+    padding: 16px;
+}
+
+.table td {
+    padding: 16px;
+    border-bottom: 1px solid var(--bolt-border);
+    vertical-align: middle;
+}
+
+/* Dropdowns */
+.bolt-dropdown {
+    border-radius: 16px;
+    border: 1px solid var(--bolt-border);
+    padding: 10px;
+}
+
+/* Progress Bars */
+.progress {
+    background: #f0f2f5;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    border-radius: 10px;
+}
+
+/* Animations */
+.fade-in {
+    animation: boltFadeIn 0.5s ease-out;
+}
+
+@keyframes boltFadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}

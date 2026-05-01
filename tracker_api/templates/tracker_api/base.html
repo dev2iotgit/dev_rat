@@ -1,0 +1,92 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAT Management</title>
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Bootstrap & Custom CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+
+<body class="bolt-bg">
+
+    <!-- Boltshift Header Layout -->
+    <header class="bolt-header py-3 px-4 mb-4">
+        <div class="d-flex align-items-center justify-content-between">
+            <!-- Left: Logo -->
+            <div class="d-flex align-items-center">
+                <a href="{% url 'dashboard-home' %}" class="text-decoration-none d-flex align-items-center">
+                    <div class="bolt-logo-circle me-2">
+                        <i class="fas fa-bolt text-white"></i>
+                    </div>
+                    <span class="bolt-brand-text">RAT Management</span>
+                </a>
+            </div>
+
+            <!-- Center: Navigation Pills -->
+            <nav class="bolt-nav-center d-none d-lg-flex">
+                <a href="{% url 'dashboard-home' %}"
+                    class="bolt-nav-item {% if request.resolver_match.url_name == 'dashboard-home' %}active{% endif %}">Dashboard</a>
+                <a href="{% url 'security-dashboard' %}"
+                    class="bolt-nav-item {% if request.resolver_match.url_name == 'security-dashboard' %}active{% endif %}">Security</a>
+                <a href="{% url 'analytics-dashboard' %}"
+                    class="bolt-nav-item {% if request.resolver_match.url_name == 'analytics-dashboard' %}active{% endif %}">Analytics</a>
+                <a href="{% url 'shift-list' %}"
+                    class="bolt-nav-item {% if 'shift' in request.resolver_match.url_name %}active{% endif %}">Shifts</a>
+                <a href="{% url 'employee-shift-align' %}"
+                    class="bolt-nav-item {% if request.resolver_match.url_name == 'employee-shift-align' %}active{% endif %}">Agents</a>
+            </nav>
+
+            <!-- Right: Action Icons & Profile -->
+            <div class="d-flex align-items-center gap-3">
+                <div class="bolt-header-icons d-flex gap-2">
+                    <button class="btn bolt-icon-btn"><i class="fas fa-search"></i></button>
+                    <button class="btn bolt-icon-btn"><i class="fas fa-bell"></i></button>
+                    <button class="btn bolt-icon-btn"><i class="fas fa-cog"></i></button>
+                </div>
+                <div class="bolt-profile-section border-start ps-3 d-flex align-items-center">
+                    <div class="text-end me-2 d-none d-md-block">
+                        <div class="bolt-user-name">{{ user.username }}</div>
+                        <div class="bolt-user-email">{{ user.email|default:"leon.a@kosoft.co" }}</div>
+                    </div>
+                    <div class="bolt-avatar dropdown">
+                        <img src="https://ui-avatars.com/api/?name={{ user.username }}&background=7c4dff&color=fff"
+                            class="rounded-circle cursor-pointer" width="40" height="40" data-bs-toggle="dropdown">
+                        <ul class="dropdown-menu dropdown-menu-end bolt-dropdown shadow-lg">
+                            <li>
+                                <h6 class="dropdown-header">Account Management</h6>
+                            </li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li>
+                                <form action="{% url 'logout' %}" method="post" class="px-3">
+                                    {% csrf_token %}
+                                    <button type="submit"
+                                        class="btn btn-danger btn-sm w-100 rounded-pill">Logout</button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container-fluid px-4 pb-5">
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

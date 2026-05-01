@@ -1,0 +1,45 @@
+<div class="glass-card p-0 overflow-hidden border-light border-opacity-10 shadow-sm">
+    <div class="p-3 border-bottom border-light border-opacity-10 d-flex justify-content-between align-items-center">
+        <h6 class="mb-0 fw-bold"><i class="fas fa-history me-2 text-warning"></i>Attendance Timeline</h6>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-dark table-hover mb-0 x-small">
+            <thead>
+                <tr>
+                    <th class="ps-4">Event</th>
+                    <th>Status</th>
+                    <th>Timestamp</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in attendance_logs %}
+                <tr>
+                    <td class="ps-4">
+                        {% if log.status == 'check-in' %}
+                        <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 badge-glass">CHECK-IN</span>
+                        {% elif log.status == 'check-out' %}
+                        <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 badge-glass">CHECK-OUT</span>
+                        {% elif log.status == 'break-start' %}
+                        <span class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 badge-glass text-dark">BREAK START</span>
+                        {% elif log.status == 'break-end' %}
+                        <span class="badge bg-info bg-opacity-10 text-info border border-info border-opacity-25 badge-glass">BREAK END</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if log.status == 'check-in' %}Checked In
+                        {% elif log.status == 'check-out' %}Checked Out
+                        {% elif log.status == 'break-start' %}On Break
+                        {% elif log.status == 'break-end' %}Back from Break
+                        {% endif %}
+                    </td>
+                    <td>{{ log.timestamp|date:"M d, H:i:s" }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="3" class="text-center py-4 text-muted-custom">No attendance logs found for this device.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -1,0 +1,27 @@
+{% extends 'tracker_api/base.html' %}
+
+{% block content %}
+<div id="dashboard-container">
+    {% include 'tracker_api/_dashboard_content.html' %}
+</div>
+
+<script>
+    const POLL_INTERVAL = 10000; // 10 seconds
+
+    async function pollDashboard() {
+        try {
+            const response = await fetch("?ajax=true");
+            if (response.ok) {
+                const html = await response.text();
+                // Update the dashboard content without losing scroll pos
+                document.getElementById('dashboard-container').innerHTML = html;
+            }
+        } catch (error) {
+            console.error("Dashboard polling failed:", error);
+        }
+    }
+
+    // Set the continuous auto-refresh
+    setInterval(pollDashboard, POLL_INTERVAL);
+</script>
+{% endblock %}

@@ -1,0 +1,149 @@
+{% extends 'tracker_api/base.html' %}
+
+{% block content %}
+<div class="row mb-5 fade-in">
+    <div class="col-md-12">
+        <div class="d-flex align-items-center">
+            <div class="bg-primary bg-opacity-10 rounded-pill p-3 me-3">
+                <i class="fas fa-chart-line text-primary fa-2x"></i>
+            </div>
+            <div>
+                <h2 class="mb-0">Behavioral Analytics Engine</h2>
+                <p class="text-muted-custom mb-0">Deep productivity mapping and organizational engagement trends.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-5 g-4 fade-in" style="animation-delay: 0.1s;">
+    <!-- Heatmap Logic -->
+    <div class="col-md-12">
+        <div class="glass-card">
+            <h6 class="mb-4"><i class="fas fa-calendar-days text-primary me-2"></i> Organization Engagement Heatmap (Last 30 Days)</h6>
+            <div class="d-flex flex-wrap gap-2 justify-content-center mb-3">
+                {% for day in heatmap_data %}
+                <div class="heatmap-sq level-{{ day.intensity }}" title="{{ day.date }}: {{ day.hours }}h active"></div>
+                {% endfor %}
+            </div>
+            <div class="d-flex justify-content-center align-items-center x-small text-muted-custom">
+                <span class="me-2">Less Active</span>
+                <div class="heatmap-sq level-0 me-1"></div>
+                <div class="heatmap-sq level-1 me-1"></div>
+                <div class="heatmap-sq level-2 me-1"></div>
+                <div class="heatmap-sq level-3 me-1"></div>
+                <div class="heatmap-sq level-4 me-2"></div>
+                <span>Peak Productivity</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-5 g-4 fade-in" style="animation-delay: 0.2s;">
+    <!-- Active vs Idle -->
+    <div class="col-lg-4">
+        <div class="glass-card h-100 flex-column d-flex align-items-center justify-content-center text-center">
+            <h6 class="mb-4 text-muted-custom text-uppercase small fw-bold">Fleet Active Ratio</h6>
+            <div style="width: 200px; height: 200px; position: relative;">
+                <canvas id="productivityChart"></canvas>
+                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+                    <h2 class="mb-0 fw-bold">{{ active_ratio }}%</h2>
+                </div>
+            </div>
+            <div class="mt-4 w-100 d-flex justify-content-around small">
+                <div class="d-flex align-items-center"><span class="rounded-circle bg-primary me-2" style="width: 8px; height: 8px;"></span> Active</div>
+                <div class="d-flex align-items-center"><span class="rounded-circle bg-secondary me-2" style="width: 8px; height: 8px;"></span> Idle</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="col-lg-4">
+        <div class="glass-card bg-success bg-opacity-10 h-100 d-flex flex-column justify-content-center text-center border-success border-opacity-25">
+            <i class="fas fa-bolt-lightning text-success fa-3x mb-3"></i>
+            <h4 class="mb-1 text-white">Deep Work Sessions</h4>
+            <h1 class="display-3 fw-bold text-success">{{ focus_sessions_count }}</h1>
+            <p class="x-small text-muted-custom mt-2">Continuous focus periods > 25 mins</p>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="glass-card bg-warning bg-opacity-10 h-100 d-flex flex-column justify-content-center text-center border-warning border-opacity-25">
+            <i class="fas fa-shuffle text-warning fa-3x mb-3"></i>
+            <h4 class="mb-1 text-white">Context Switching Index</h4>
+            <h1 class="display-3 fw-bold text-warning">{{ context_switches }}</h1>
+            <p class="x-small text-muted-custom mt-2">Higher index suggests fragmented attention</p>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 fade-in" style="animation-delay: 0.3s;">
+    <!-- Prediction Mocks with Premium Style -->
+    <div class="col-md-6">
+        <div class="glass-card border-primary border-opacity-25 bg-primary bg-opacity-5">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+                <h5 class="mb-0 text-primary">Z-Score Anomaly Detection</h5>
+                <span class="badge bg-primary bg-opacity-10 text-primary badge-glass x-small">Trained</span>
+            </div>
+            <p class="small text-muted-custom mb-4">Model identifying statistical outliers in fleet performance. Threshold: +/- 2.5 Std Dev.</p>
+            <div class="text-center py-4">
+                <i class="fas fa-brain fa-3x text-primary opacity-25"></i>
+                <div class="mt-3 x-small text-muted-custom">Analyzing real-time Gaussian distribution...</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="glass-card border-info border-opacity-25 bg-info bg-opacity-5">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+                <h5 class="mb-0 text-info">Predictive Load Forecasting</h5>
+                <span class="badge bg-info bg-opacity-10 text-info badge-glass x-small">Learning</span>
+            </div>
+            <p class="small text-muted-custom mb-4">Time-series forecasting for endpoint resource depletion (CPU/RAM/IO).</p>
+            <div class="text-center py-4">
+                <i class="fas fa-tower-broadcast fa-3x text-info opacity-25"></i>
+                <div class="mt-3 x-small text-muted-custom">Smoothing seasonal activity patterns...</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .heatmap-sq { width: 18px; height: 18px; border-radius: 3px; background-color: rgba(255,255,255,0.05); }
+    .level-0 { background-color: rgba(255,255,255,0.05); }
+    .level-1 { background-color: #93c5fd; opacity: 0.4; }
+    .level-2 { background-color: #60a5fa; opacity: 0.6; }
+    .level-3 { background-color: #3b82f6; opacity: 0.8; }
+    .level-4 { background-color: #2563eb; }
+    .x-small { font-size: 0.75rem; }
+</style>
+
+<!-- Chart JS -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const ctx = document.getElementById('productivityChart').getContext('2d');
+        const activeRatio = {{ active_ratio }};
+        const idleRatio = {{ idle_ratio }};
+
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Active', 'Idle'],
+                datasets: [{
+                    data: [activeRatio, idleRatio],
+                    backgroundColor: ['#6366f1', 'rgba(255,255,255,0.05)'],
+                    borderWidth: 0,
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '85%',
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        @page {
+            size: a4 portrait;
+            margin: 2cm;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            color: #333;
+            line-height: 1.6;
+        }
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #0d6efd;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .section-title {
+            color: #0d6efd;
+            border-bottom: 1px solid #dee2e6;
+            padding-bottom: 5px;
+            margin-top: 20px;
+        }
+        .stat-box {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            text-align: left;
+            padding: 8px;
+            border-bottom: 1px solid #dee2e6;
+        }
+        th {
+            background-color: #e9ecef;
+        }
+        .risk-high { color: #dc3545; font-weight: bold; }
+        .footer {
+            position: fixed;
+            bottom: 0px;
+            text-align: center;
+            font-size: 10px;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Employee Activity & Risk Report</h1>
+        <p>Organization Security & Productivity Suite | Generated on {{ report_date }}</p>
+    </div>
+
+    <div class="stat-box">
+        <h3>Summary for {{ employee.name }}</h3>
+        <p><strong>Department:</strong> {{ employee.department }}</p>
+        <p><strong>Total Active Tracked Hours:</strong> {{ total_active_hours }}h</p>
+    </div>
+
+    <h2 class="section-title">Top Productivity Applications</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Application Name</th>
+                <th>Total Time (Seconds)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for app in top_apps %}
+            <tr>
+                <td>{{ app.app_name }}</td>
+                <td>{{ app.total_duration }}s</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h2 class="section-title">Security & Risk Events</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Timestamp</th>
+                <th>Event Type</th>
+                <th>Risk Weight</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for evt in recent_events %}
+            <tr>
+                <td>{{ evt.timestamp|date:"Y-m-d H:i" }}</td>
+                <td>{{ evt.event_type }}</td>
+                <td class="{% if evt.risk_weight > 30 %}risk-high{% endif %}">+{{ evt.risk_weight }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="3">No security events recorded.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="footer">
+        Confidential - Internal Use Only. [Project RAT Monitoring System]
+    </div>
+</body>
+</html>

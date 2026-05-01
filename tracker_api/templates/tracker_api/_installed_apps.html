@@ -1,0 +1,78 @@
+<!-- Installed Applications Fragment -->
+<div class="px-4 py-3 border-bottom border-light border-opacity-10 d-flex justify-content-between align-items-center bg-white bg-opacity-5">
+    <div>
+        <h6 class="mb-0 small fw-bold"><i class="fas fa-boxes-stacked me-2 text-primary"></i> Software Inventory</h6>
+        <p class="mb-0 x-small text-muted-custom">Resident applications and authorization state</p>
+    </div>
+    <div class="x-small">
+        <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-10 me-2" id="unauthorized-count"></span>
+        <input type="text" id="app-search" class="form-control form-control-sm rounded-pill bg-dark bg-opacity-25 border-light border-opacity-10 x-small text-white" placeholder="Search apps..." onkeyup="filterApps()">
+    </div>
+</div>
+
+<div class="table-responsive" style="max-height: 400px;">
+    <table class="table table-sm table-hover mb-0" id="apps-table">
+        <thead class="bg-dark bg-opacity-50 text-muted-custom x-small">
+            <tr>
+                <th class="ps-4 py-2 border-0">Application</th>
+                <th class="py-2 border-0">Version/Publisher</th>
+                <th class="py-2 border-0">Installed</th>
+                <th class="py-2 border-0">Last Active</th>
+                <th class="pe-4 py-2 border-0 text-end">Security</th>
+            </tr>
+        </thead>
+        <tbody class="x-small">
+            {% for app in apps %}
+            <tr class="align-middle app-row {% if not app.is_authorized %}bg-danger bg-opacity-10{% endif %}" data-auth="{{ app.is_authorized|yesno:'1,0' }}">
+                <td class="ps-4 py-3">
+                    <div class="fw-bold {% if not app.is_authorized %}text-danger{% endif %}">{{ app.app_name }}</div>
+                </td>
+                <td>
+                    <div class="text-muted-custom">{{ app.version|default:"-" }}</div>
+                    <div class="text-muted-custom" style="font-size: 0.65rem;">{{ app.publisher|default:"-" }}</div>
+                </td>
+                <td class="text-muted-custom">
+                    {{ app.install_date|default:"Unknown" }}
+                </td>
+                <td>
+                    {% if app.last_used_at %}
+                    <span class="text-info">{{ app.last_used_at|date:"M d, H:i" }}</span>
+                    {% else %}
+                    <span class="text-muted-custom italic">No logs</span>
+                    {% endif %}
+                </td>
+                <td class="pe-4 text-end">
+                    {% if app.is_authorized %}
+                    <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-10 px-2 py-1" style="font-size: 0.6rem;">AUTHORIZED</span>
+                    {% else %}
+                    <span class="badge bg-danger text-white px-2 py-1 shadow-sm" style="font-size: 0.6rem;">UNAUTHORIZED</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5" class="text-center py-5 text-muted-custom italic">No inventory data synced yet.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+    function filterApps() {
+        const input = document.getElementById('app-search').value.toLowerCase();
+        const rows = document.querySelectorAll('.app-row');
+        rows.forEach(row => {
+            const text = row.innerText.toLowerCase();
+            row.style.display = text.includes(input) ? '' : 'none';
+        });
+    }
+
+    // Refresh unauthorized count locally
+    (function updateCount() {
+        const unauthorizedCount = document.querySelectorAll('.app-row[data-auth="0"]').length;
+        const badge = document.getElementById('unauthorized-count');
+        if (badge) {
+            badge.innerText = `${unauthorizedCount} Critical Risks`;
+            badge.style.display = unauthorizedCount > 0 ? 'inline-block' : 'none';
+        }
+    })();
+</script>

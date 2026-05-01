@@ -1,0 +1,76 @@
+{% extends 'tracker_api/base.html' %}
+
+{% block content %}
+<div class="row mb-5 fade-in">
+    <div class="col-md-12 d-flex justify-content-between align-items-center">
+        <div>
+            <h2 class="mb-0">Policy & Shift Configuration</h2>
+            <p class="text-muted-custom mb-0">Manage operational hours and compliance thresholds.</p>
+        </div>
+        <a href="{% url 'shift-create' %}" class="btn btn-primary rounded-pill px-4">
+            <i class="fas fa-plus me-2"></i> Define New Shift
+        </a>
+    </div>
+</div>
+
+<div class="row fade-in" style="animation-delay: 0.1s;">
+    <div class="col-md-12">
+        <div class="glass-card p-0 overflow-hidden">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th class="ps-4">Policy Name</th>
+                            <th>Operational Hours</th>
+                            <th>Active Workdays</th>
+                            <th class="pe-4 text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for shift in shifts %}
+                        <tr>
+                            <td class="ps-4">
+                                <div class="fw-bold fs-5 text-primary">{{ shift.name }}</div>
+                                <div class="x-small text-muted-custom">Applied to {{ shift.employee_set.count }} Assets</div>
+                            </td>
+                            <td>
+                                <span class="badge bg-dark border border-light border-opacity-10 badge-glass fs-6">
+                                    {{ shift.start_time|time:"H:i" }} - {{ shift.end_time|time:"H:i" }}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="d-flex gap-1">
+                                    <span class="badge {% if shift.monday %}bg-success{% else %}bg-secondary opacity-25{% endif %} badge-glass x-small">M</span>
+                                    <span class="badge {% if shift.tuesday %}bg-success{% else %}bg-secondary opacity-25{% endif %} badge-glass x-small">T</span>
+                                    <span class="badge {% if shift.wednesday %}bg-success{% else %}bg-secondary opacity-25{% endif %} badge-glass x-small">W</span>
+                                    <span class="badge {% if shift.thursday %}bg-success{% else %}bg-secondary opacity-25{% endif %} badge-glass x-small">T</span>
+                                    <span class="badge {% if shift.friday %}bg-success{% else %}bg-secondary opacity-25{% endif %} badge-glass x-small">F</span>
+                                    <span class="badge {% if shift.saturday %}bg-info{% else %}bg-secondary opacity-25{% endif %} badge-glass x-small">S</span>
+                                    <span class="badge {% if shift.sunday %}bg-info{% else %}bg-secondary opacity-25{% endif %} badge-glass x-small">S</span>
+                                </div>
+                            </td>
+                            <td class="pe-4 text-end">
+                                <a href="{% url 'shift-update' shift.id %}" class="btn btn-sm btn-outline-info rounded-pill px-3 me-2">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="{% url 'shift-delete' shift.id %}" class="btn btn-sm btn-outline-danger rounded-pill px-3">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center py-5 text-muted-custom italic">No operational shifts defined.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .x-small { font-size: 0.7rem; }
+</style>
+{% endblock %}

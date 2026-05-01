@@ -1,0 +1,22 @@
+<!-- Security Timeline Fragment -->
+<div class="px-3 py-2 bg-danger bg-opacity-10 border-bottom border-danger border-opacity-10">
+    <h6 class="mb-0 small text-danger fw-bold">Security Timeline</h6>
+</div>
+<div class="p-0">
+    <table class="table table-sm mb-0">
+        <tbody class="x-small">
+            {% for evt in events %}
+            <tr class="border-bottom border-light border-opacity-10">
+                <td class="ps-3 py-2 text-muted-custom">{{ evt.timestamp|date:"m/d H:i" }}</td>
+                <td class="fw-bold">{{ evt.event_type }}</td>
+                <td class="pe-3 text-end text-danger fw-bold">+{{ evt.risk_weight }}</td>
+            </tr>
+            <tr>
+                <td colspan="3" class="ps-3 pb-2 pt-0 text-muted-custom" style="font-size: 0.75rem;">
+                    {{ evt.description|default:"No additional details." }}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,134 @@
+{% extends 'tracker_api/base.html' %}
+
+{% block content %}
+<div class="row mb-5 fade-in">
+    <div class="col-md-12">
+        <div class="d-flex align-items-center">
+            <div class="bg-danger bg-opacity-10 rounded-pill p-3 me-3">
+                <i class="fas fa-shield-halved text-danger fa-2x"></i>
+            </div>
+            <div>
+                <h2 class="mb-0">Security Command Center</h2>
+                <p class="text-muted-custom mb-0">Centralized threat intelligence and endpoint remediation hub.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-5 g-4 fade-in" style="animation-delay: 0.1s;">
+    <!-- Threat Breakdown Cards -->
+    <div class="col-md-3">
+        <div class="glass-card text-center border-danger border-opacity-25 shadow-danger">
+            <div class="x-small text-muted-custom text-uppercase fw-bold mb-2">Blacklisted App Executions</div>
+            <h1 class="display-4 fw-bold text-danger mb-0">{{ blacklist_count }}</h1>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="glass-card text-center">
+            <div class="x-small text-muted-custom text-uppercase fw-bold mb-2">Network Exfiltration Spikes</div>
+            <h1 class="display-4 fw-bold text-warning mb-0">{{ upload_spike_count }}</h1>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="glass-card text-center">
+            <div class="x-small text-muted-custom text-uppercase fw-bold mb-2">Disk Anomaly Triggers</div>
+            <h1 class="display-4 fw-bold text-info mb-0">{{ disk_anomaly_count }}</h1>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="glass-card text-center">
+            <div class="x-small text-muted-custom text-uppercase fw-bold mb-2">Unauthorized USB Mounts</div>
+            <h1 class="display-4 fw-bold text-primary mb-0">{{ usb_count }}</h1>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 fade-in" style="animation-delay: 0.2s;">
+    <!-- Risky Employees Roster -->
+    <div class="col-lg-5">
+        <div class="glass-card h-100 p-0 overflow-hidden">
+            <div class="px-4 py-3 border-bottom border-light border-opacity-10 d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 text-white"><i class="fas fa-biohazard text-danger me-2"></i> High-Risk Asset Roster</h5>
+            </div>
+            <div class="p-0">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th class="ps-4">Asset Name</th>
+                            <th>Current Risk Index</th>
+                            <th class="pe-4 text-end">Remediate</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for d in risky_devices %}
+                        <tr>
+                            <td class="ps-4">
+                                <div class="fw-bold fw-bold">{{ d.employee.name }}</div>
+                                <div class="x-small text-muted-custom">{{ d.machine_id }}</div>
+                            </td>
+                            <td>
+                                <div class="progress bg-dark bg-opacity-50" style="height: 6px; width: 100px;">
+                                    <div class="progress-bar bg-danger" style="width: {{ d.total_risk }}%"></div>
+                                </div>
+                                <div class="x-small mt-1 text-danger fw-bold">{{ d.total_risk|default:0 }} Pts</div>
+                            </td>
+                            <td class="pe-4 text-end">
+                                <a href="{% url 'device-detail' d.id %}" class="btn btn-sm btn-outline-danger px-3 rounded-pill">
+                                    <i class="fas fa-bolt"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Active Threat Timeline -->
+    <div class="col-lg-7">
+        <div class="glass-card h-100 p-0 overflow-hidden">
+            <div class="px-4 py-3 border-bottom border-light border-opacity-10 bg-white bg-opacity-5">
+                <h5 class="mb-0 text-white"><i class="fas fa-list-check text-primary me-2"></i> Global Threat Timeline</h5>
+            </div>
+            <div class="p-0" style="max-height: 500px; overflow-y: auto;">
+                <table class="table table-sm table-hover mb-0">
+                    <thead class="sticky-top bg-dark">
+                        <tr>
+                            <th class="ps-4">Timestamp</th>
+                            <th>Event Category</th>
+                            <th>Description</th>
+                            <th class="pe-4">Weight</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for evt in recent_events %}
+                        <tr class="level-{{ evt.risk_weight|default:0 }}">
+                            <td class="ps-4 x-small text-muted-custom">{{ evt.timestamp|date:"m/d H:i:s" }}</td>
+                            <td>
+                                <span class="badge badge-risk-{{ evt.risk_weight|default:0 }} badge-glass small">
+                                    {{ evt.event_type|upper }}
+                                </span>
+                            </td>
+                            <td class="small">{{ evt.description|truncatechars:60 }}</td>
+                            <td class="pe-4 text-danger fw-bold">+{{ evt.risk_weight }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="4" class="text-center py-5 text-muted-custom">All systems nominal. No threats detected.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .badge-risk-0, .badge-risk-10, .badge-risk-20 { background: rgba(16, 185, 129, 0.1); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.2); }
+    .badge-risk-30, .badge-risk-40 { background: rgba(245, 158, 11, 0.1); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.2); }
+    .badge-risk-50, .badge-risk-60, .badge-risk-70, .badge-risk-80, .badge-risk-90, .badge-risk-100 { background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); }
+    
+    .shadow-danger { box-shadow: 0 0 30px rgba(239, 68, 68, 0.15); }
+    .x-small { font-size: 0.7rem; }
+</style>
+{% endblock %}

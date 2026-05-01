@@ -1,0 +1,43 @@
+<!-- Command History Fragment -->
+<div class="px-4 py-2 border-bottom border-light border-opacity-10 bg-dark bg-opacity-25 d-flex justify-content-between align-items-center">
+    <h6 class="mb-0 x-small text-uppercase fw-bold text-muted-custom"><i class="fas fa-list-check me-2"></i> Audit Trail</h6>
+    <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-10 x-small">{{ recent_commands.count }} Commands</span>
+</div>
+<div class="table-responsive" style="max-height: 250px;">
+    <table class="table table-sm table-hover mb-0">
+        <tbody class="x-small">
+            {% for cmd in recent_commands %}
+            <tr class="align-middle">
+                <td class="ps-4 py-2">
+                    <div class="fw-bold">{{ cmd.command_type|upper }}</div>
+                    <div class="text-muted-custom" style="font-size: 0.6rem;">{{ cmd.created_at|date:"m/d H:i:s" }}</div>
+                </td>
+                <td>
+                    {% if cmd.parameters %}
+                    <div class="text-muted-custom italic truncate-params" style="max-width: 100px; font-size: 0.6rem;">
+                        {{ cmd.parameters }}
+                    </div>
+                    {% endif %}
+                </td>
+                <td class="pe-4 text-end">
+                    {% if cmd.status == 'executed' %}
+                    <span class="text-success" title="Executed"><i class="fas fa-check-circle"></i></span>
+                    {% elif cmd.status == 'failed' %}
+                    <span class="text-danger" title="Failed"><i class="fas fa-times-circle"></i></span>
+                    {% elif cmd.status == 'delivered' %}
+                    <span class="text-info" title="Delivered"><i class="fas fa-paper-plane"></i></span>
+                    {% else %}
+                    <span class="text-warning" title="Pending"><i class="fas fa-clock fa-spin"></i></span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="3" class="text-center py-4 text-muted-custom italic">No commands dispatched recently.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<style>
+    .truncate-params { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+</style>

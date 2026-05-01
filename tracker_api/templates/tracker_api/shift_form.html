@@ -1,0 +1,67 @@
+{% extends 'tracker_api/base.html' %}
+
+{% block content %}
+<div class="row justify-content-center py-5 fade-in">
+    <div class="col-md-8">
+        <div class="glass-card p-5">
+            <div class="text-center mb-5">
+                <i class="fas fa-calendar-plus text-primary fa-3x mb-3"></i>
+                <h2 class="mb-0">{{ title }}</h2>
+                <p class="text-muted-custom">Configure working hours and active operational days.</p>
+            </div>
+
+            <form method="post">
+                {% csrf_token %}
+                
+                <div class="row g-4">
+                    <div class="col-md-12">
+                        <label class="form-label small text-muted-custom fw-bold">Shift Name (e.g., Night Shift, US Support)</label>
+                        {{ form.name }}
+                        {% if form.name.errors %}<div class="text-danger x-small">{{ form.name.errors }}</div>{% endif %}
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label small text-muted-custom fw-bold">Daily Start Time</label>
+                        {{ form.start_time }}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small text-muted-custom fw-bold">Daily End Time</label>
+                        {{ form.end_time }}
+                    </div>
+
+                    <div class="col-md-12 mt-4">
+                        <label class="form-label small text-muted-custom fw-bold mb-3 d-block">Active Working Days</label>
+                        <div class="glass-card bg-white bg-opacity-5 p-4">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-check">{{ form.monday }} <label class="form-check-label ps-2">Monday</label></div>
+                                    <div class="form-check mt-2">{{ form.tuesday }} <label class="form-check-label ps-2">Tuesday</label></div>
+                                    <div class="form-check mt-2">{{ form.wednesday }} <label class="form-check-label ps-2">Wednesday</label></div>
+                                    <div class="form-check mt-2">{{ form.thursday }} <label class="form-check-label ps-2">Thursday</label></div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-check">{{ form.friday }} <label class="form-check-label ps-2 font-bold text-info">Friday</label></div>
+                                    <div class="form-check mt-2">{{ form.saturday }} <label class="form-check-label ps-2 text-warning">Saturday</label></div>
+                                    <div class="form-check mt-2">{{ form.sunday }} <label class="form-check-label ps-2 text-warning">Sunday</label></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mt-5">
+                    <a href="{% url 'shift-list' %}" class="btn btn-outline-secondary rounded-pill px-4">Cancel</a>
+                    <button type="submit" class="btn btn-primary rounded-pill px-5 py-2 fw-bold">Save Configuration</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    .form-control { background-color: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #fff; }
+    .form-control:focus { background-color: rgba(255,255,255,0.08); border-color: var(--primary); color: #fff; box-shadow: 0 0 10px rgba(99, 102, 241, 0.2); }
+    .form-check-input { background-color: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.2); }
+    .form-check-input:checked { background-color: var(--primary); border-color: var(--primary); }
+</style>
+{% endblock %}

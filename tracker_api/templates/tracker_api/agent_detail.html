@@ -1,0 +1,145 @@
+{% extends 'tracker_api/base.html' %}
+
+{% block content %}
+<div class="row mb-3">
+    <div class="col-md-12">
+        <a href="{% url 'dashboard-home' %}" class="btn btn-outline-secondary">&larr; Back to Dashboard</a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card mb-4 border-info">
+            <div class="card-header bg-info text-white">
+                <h4 class="mb-0">Agent Details: {{ agent.machine_id }}</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <strong>OS Name:</strong> {{ agent.os_name }}<br>
+                        <strong>IP Address:</strong> {{ agent.ip_address|default:"Unknown" }}<br>
+                    </div>
+                    <div class="col-md-4">
+                        <strong>Registered At:</strong> {{ agent.registered_at|date:"Y-m-d H:i:s" }}<br>
+                        <strong>Last Sync:</strong> {{ agent.last_seen|date:"Y-m-d H:i:s" }}<br>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 d-flex">
+        <div class="card w-100 flex-fill">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Top 10 Used Applications</h5>
+            </div>
+            <div class="card-body p-0">
+                <table class="table table-hover table-sm mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Application Name</th>
+                            <th>Total Duration (Secs)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for app in top_apps %}
+                        <tr>
+                            <td>{{ app.app_name }}</td>
+                            <td>{{ app.total_duration }}s</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="2" class="text-center text-muted">No app logs yet.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 d-flex">
+        <div class="card w-100 flex-fill border-danger">
+            <div class="card-header bg-danger text-white">
+                <h5 class="mb-0">Agent Security & System Events</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive" style="max-height: 300px; overflow-y: auto;">
+                    <table class="table table-sm table-hover mb-0">
+                        <thead class="table-light" style="position: sticky; top: 0; z-index: 1;">
+                            <tr>
+                                <th>Time</th>
+                                <th>Type</th>
+                                <th>Detail</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for evt in events %}
+                            <tr>
+                                <td>{{ evt.timestamp|date:"m/d H:i:s" }}</td>
+                                <td>
+                                    {% if evt.event_type == 'security' or evt.event_type == 'blacklist' %}
+                                    <span class="badge bg-danger status-badge">{{ evt.event_type }}</span>
+                                    {% elif evt.event_type == 'idle' %}
+                                    <span class="badge bg-secondary status-badge">{{ evt.event_type }}</span>
+                                    {% else %}
+                                    <span class="badge bg-warning text-dark status-badge">{{ evt.event_type }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ evt.description }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="3" class="text-center text-muted">No system events.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header bg-dark text-white">
+                <h5 class="mb-0">Recent Application Usage Logs</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                    <table class="table table-sm table-hover mb-0">
+                        <thead class="table-light" style="position: sticky; top: 0; z-index: 1;">
+                            <tr>
+                                <th>App Name</th>
+                                <th>Start Time</th>
+                                <th>End Time</th>
+                                <th>Duration</th>
+                                <th>Data Usage (Bytes)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for log in recent_logs %}
+                            <tr>
+                                <td>{{ log.app_name }}</td>
+                                <td>{{ log.start_time|date:"Y-m-d H:i:s" }}</td>
+                                <td>{{ log.end_time|date:"Y-m-d H:i:s" }}</td>
+                                <td>{{ log.duration }}s</td>
+                                <td>{{ log.data_usage_bytes }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center text-muted">No usage logs.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

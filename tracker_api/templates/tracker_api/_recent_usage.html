@@ -1,0 +1,144 @@
+<!-- Recent Usage (App Sessions) Fragment -->
+<div
+    class="px-4 py-3 border-bottom border-light border-opacity-10 d-flex justify-content-between align-items-center bg-white bg-opacity-5">
+    <h6 class="mb-0"><i class="fas fa-microchip me-2 text-info"></i> Resource Utilization & Application Timeline</h6>
+    <span class="x-small text-muted-custom">Last 50 Sessions</span>
+</div>
+
+<!-- Chart Section -->
+<div class="p-4 border-bottom border-light border-opacity-10">
+    <div class="row">
+        <div class="col-md-6 mb-3 mb-md-0">
+            <h6 class="small text-muted-custom mb-3 text-center">App Time Distribution (Seconds)</h6>
+            <div style="height: 220px; width: 100%; display: flex; justify-content: center;">
+                <canvas id="usagePieChart"></canvas>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <h6 class="small text-muted-custom mb-3 text-center">Shift Based Usage (Seconds)</h6>
+            <div style="height: 220px; width: 100%; display: flex; justify-content: center;">
+                <canvas id="shiftPieChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Application Usage Overview (Grouped Summary) -->
+<div class="px-4 py-3 border-bottom border-light border-opacity-10 bg-light bg-opacity-50">
+    <h6 class="small fw-bold text-primary mb-0"><i class="fas fa-list-check me-2"></i> Today's Application Engagement Summary</h6>
+</div>
+<div class="table-responsive border-bottom border-light border-opacity-10">
+    <table class="table table-sm mb-0 table-hover">
+        <thead>
+            <tr class="bg-light">
+                <th class="ps-4">Application Asset</th>
+                <th class="text-center">Times Opened</th>
+                <th class="text-center">Total Active Duration</th>
+                <th class="text-center">First Activity</th>
+                <th class="pe-4 text-end">Last Sync Point</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for app in app_summary %}
+            <tr>
+                <td class="ps-4">
+                    <div class="d-flex align-items-center">
+                        <div class="bolt-avatar-sm me-2 bg-primary bg-opacity-10 text-primary d-flex align-items-center justify-content-center" style="width: 28px; height: 28px; border-radius: 6px;">
+                            {% if 'chrome' in app.app_name|lower %}<i class="fab fa-chrome x-small"></i>
+                            {% elif 'code' in app.app_name|lower %}<i class="fas fa-code x-small"></i>
+                            {% elif 'edge' in app.app_name|lower %}<i class="fab fa-edge x-small"></i>
+                            {% else %}<i class="fas fa-cube x-small"></i>{% endif %}
+                        </div>
+                        <span class="fw-bold small">{{ app.app_name }}</span>
+                    </div>
+                </td>
+                <td class="text-center"><span class="badge bg-secondary bg-opacity-10 text-muted-custom rounded-pill px-2">{{ app.count }}</span></td>
+                <td class="text-center">
+                    <div class="fw-bold text-primary">{{ app.total_duration }}s</div>
+                </td>
+                <td class="text-center small text-muted-custom">{{ app.first_opened|date:"H:i:s" }}</td>
+                <td class="pe-4 text-end">
+                    <div class="small fw-bold text-dark">{{ app.last_active|date:"H:i:s" }}</div>
+                    {% if app.last_active > recent_cutoff %}
+                    <span class="badge bg-success bg-opacity-10 text-success x-small rounded-pill">LIVE</span>
+                    {% else %}
+                    <span class="badge bg-light text-muted-custom x-small rounded-pill">CLOSED</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" class="text-center py-3 text-muted-custom small">No application activity recorded for today yet.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="px-4 py-3 border-bottom border-light border-opacity-10 bg-white bg-opacity-5">
+    <h6 class="small fw-bold text-muted-custom mb-0"><i class="fas fa-history me-2"></i> Detailed Activity Timeline (Sequential Logs)</h6>
+</div>
+<div class="table-responsive">
+    <table class="table table-sm mb-0">
+        <thead>
+            <tr>
+                <th class="ps-4">Application</th>
+                <th>Time / Compliance</th>
+                <th>Network Traffic</th>
+                <th class="pe-4">Disk I/O</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for log in recent_logs %}
+            <tr
+                class="{% if log.shift_status == 'overtime' %}border-start border-warning border-3{% elif log.shift_status == 'off-shift' %}border-start border-danger border-3{% endif %}">
+                <td class="ps-4">
+                    <div class="fw-bold small">
+                        {% if 'chrome' in log.app_name|lower %}<i class="fab fa-chrome text-primary me-1"></i>
+                        {% elif 'firefox' in log.app_name|lower %}<i class="fab fa-firefox text-warning me-1"></i>
+                        {% elif 'edge' in log.app_name|lower %}<i class="fab fa-edge text-info me-1"></i>
+                        {% elif 'explorer' in log.app_name|lower %}<i class="fab fa-internet-explorer text-info me-1"></i>
+                        {% elif 'slack' in log.app_name|lower %}<i class="fab fa-slack text-danger me-1"></i>
+                        {% elif 'code' in log.app_name|lower %}<i class="fas fa-code text-info me-1"></i>
+                        {% elif 'discord' in log.app_name|lower %}<i class="fab fa-discord text-primary me-1"></i>
+                        {% elif 'system' in log.app_name|lower %}<i class="fas fa-microchip text-secondary me-1"></i>
+                        {% else %}<i class="fas fa-window-maximize text-secondary me-1"></i>{% endif %}
+                        {{ log.app_name }}
+                    </div>
+                    <div class="x-small text-muted-custom">{{ log.start_time|date:"H:i:s" }}</div>
+                </td>
+                <td>
+                    <div class="small fw-bold">{{ log.duration }}s</div>
+                    {% if log.shift_status == 'on-shift' %}
+                    <span class="x-small text-success fw-bold">ON-SHIFT</span>
+                    {% elif log.shift_status == 'overtime' %}
+                    <span class="x-small text-warning fw-bold">OVERTIME</span>
+                    {% elif log.shift_status == 'off-shift' %}
+                    <span class="x-small text-danger fw-bold">OFF-SHIFT</span>
+                    {% endif %}
+                </td>
+                <td class="small">
+                    <i class="fas fa-cloud-arrow-down text-info x-small"></i> {{ log.data_rx_bytes }}B <br>
+                    <i class="fas fa-cloud-arrow-up text-warning x-small"></i> {{ log.data_tx_bytes }}B
+                </td>
+                <td class="pe-4 small fw-bold text-danger">{{ log.disk_write_bytes }}B</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script type="application/json" id="pie-chart-data-source">
+    [
+        {% for app in top_apps %}
+        {"label": "{{ app.app_name|escapejs }}", "value": {{ app.total_duration }}}{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ]
+</script>
+
+<script type="application/json" id="shift-chart-data-source">
+    [
+        {"label": "On-Shift", "value": {{ shift_distribution.on_shift|default:0 }}},
+        {"label": "Off-Shift", "value": {{ shift_distribution.off_shift|default:0 }}},
+        {"label": "Overtime", "value": {{ shift_distribution.overtime|default:0 }}}
+    ]
+</script>
